@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Game</title>
+    <style>
+        body {
+            background-color: blue;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            background-image: url("pic/grass.jpg");
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const bear = {
+            x: 400,
+            y: 300,
+            speed: 5,
+        };
+
+        const apple = {
+            x: 100,
+            y: 100,
+            width: 30,
+            height: 30,
+        };
+
+        const score = {
+            value: 0,
+        };
+
+        const appleImage = new Image();
+        appleImage.src = "pic/apple.png";
+
+        const bearImage = new Image();
+        bearImage.src = "pic/bear.png";
+
+        let gameStarted = false;
+
+        function startGameMessage() {
+            ctx.fillStyle = "white";
+            ctx.font = "36px Arial";
+            ctx.fillText("Πάτα οποιοδήποτε κουμπί", 200, 300);
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (!gameStarted) {
+                gameStarted = true;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                requestAnimationFrame(gameLoop);
+            }
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            if (event.key === "ArrowUp" && bear.y > 0) {
+                bear.y -= bear.speed;
+            } else if (event.key === "ArrowDown" && bear.y + 50 < canvasHeight) {
+                bear.y += bear.speed;
+            } else if (event.key === "ArrowLeft" && bear.x > 0) {
+                bear.x -= bear.speed;
+            } else if (event.key === "ArrowRight" && bear.x + 50 < canvasWidth) {
+                bear.x += bear.speed;
+            }
+
+            if (
+                bear.x < apple.x + apple.width &&
+                bear.x + 50 > apple.x &&
+                bear.y < apple.y + apple.height &&
+                bear.y + 50 > apple.y
+            ) {
+                score.value += 10;
+                apple.x = Math.random() * (canvasWidth - apple.width);
+                apple.y = Math.random() * (canvasHeight - apple.height);
+            }
+        });
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(appleImage, apple.x, apple.y, apple.width, apple.height);
+
+            ctx.drawImage(bearImage, bear.x, bear.y, 50, 50);
+
+            ctx.fillStyle = "white";
+            ctx.font = "24px Arial";
+            ctx.fillText("Score: " + score.value, 10, 30);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        startGameMessage();
+    </script>
+</body>
+</html>
